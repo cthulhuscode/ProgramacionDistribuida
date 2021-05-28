@@ -3,6 +3,8 @@ package org.example;
 import java.io.*;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ClientHandler implements Runnable {
@@ -13,11 +15,11 @@ public class ClientHandler implements Runnable {
     }
 
     public void run() {
-        PrintWriter output = null;
+        DataOutputStream output = null;
         BufferedReader input = null;
 
         try {
-            output = new PrintWriter(socket.getOutputStream(), true);
+            output = new DataOutputStream(socket.getOutputStream());
             input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             String received;
@@ -25,26 +27,41 @@ public class ClientHandler implements Runnable {
                 String requestArray[] = received.split(" ");
 
                 if (requestArray[0].equals("GET")) {
-                    // Get the resource name and read its contents in the /www folder
-                    // If the resource equals "/" it should open index.html
                     System.out.println(requestArray[1]);
 
-                    // Update the htmlResponse variable with the file contents
-                    File myPage = new File("./www/index.html");
-                    String htmlResponse = readContent(myPage);
+                    // If the resource equals "/" it should open index.html
+                    String resourceName = requestArray[1].equals("/") ? "/index.html" : requestArray[1];
 
-                    if(requestArray[1].equals("/about.html")){
-                        myPage = new File("./www/about.html");
-                        htmlResponse = readContent(myPage);
-                    }
+                    // Get the resource name and read its contents in the /www folder
+                    String resourcePath = "./www" + resourceName;
+                    Path filePath = Paths.get(resourcePath);
 
-                    int contentLength = htmlResponse.length();
+                    boolean fileExists = Files.exists(filePath, LinkOption.NOFOLLOW_LINKS);
 
-                    // This line should not be modified just yet
-                    output.write("HTTP/1.1 200 OK\r\nContent-Length: " +
-                            String.valueOf(contentLength) + "\r\n\r\n" + htmlResponse);
+                    if(!fileExists) filePath = Paths.get("./www/not-found.html");
 
-                    // We already sent the response, break the loop
+                    String response = null;
+                    byte[] fileContent = null;
+                    int contentLength = 0;
+
+                    if(fileExists) response = "HTTP/1.1 200 OK\r\n";
+                    else response = "HTTP/1.1 404\r\n";
+
+                    String mimeType = Files.probeContentType(filePath);
+                    fileContent = Files.readAllBytes(filePath);
+                    contentLength = fileContent.length;
+
+                    response += "Content-Type: " + mimeType + "\r\n" +
+                            "Content-Length: " + String.valueOf(contentLength) +
+                            "\r\n\r\n";
+
+                    System.out.println("MIME Type: " + mimeType);
+
+                    // Send the header
+                    output.writeBytes(response);
+                    // Send the content. Since first to last position
+                    output.write(fileContent, 0, contentLength);
+
                     break;
                 }
             }
@@ -61,15 +78,5 @@ public class ClientHandler implements Runnable {
             }
         }
 
-    }
-
-    public static String readContent(File myFile){
-        try{
-            String data = new String(Files.readAllBytes(Paths.get(myFile.getAbsolutePath())));
-            return data;
-        }catch(IOException e){
-            System.out.println("An error ocurred: " + e.getMessage());
-            return "";
-        }
     }
 }
