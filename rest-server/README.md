@@ -30,7 +30,7 @@ Responds with the following JSON:
   }
 ]
 ```
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/get_all.PNG)
 
 #### *Get one to-do*
 ```curl localhost:8000/api/v1/todos/1```
@@ -45,7 +45,7 @@ Responds with the following JSON:
 }
 ```
 
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/get_one.PNG)
 
 ### POST
 
@@ -67,7 +67,7 @@ Responds with the following JSON:
 }
 ```
 
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/post.PNG)
 
 ### PUT
 
@@ -89,7 +89,7 @@ Responds with the following JSON:
 }
 ```
 
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/update.PNG)
 
 ### DELETE
 
@@ -104,7 +104,7 @@ Responds with the following JSON:
 }
 ```
 
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/delete_one.png)
 
 
 #### *Delete all to-dos*
@@ -118,4 +118,4 @@ Responds with the following JSON:
 }
 ```
 
-[IMAGE]
+![alt text](https://raw.githubusercontent.com/enrdevp/ProgramacionDistribuida/main/rest-server/img/delete_all.PNG)
